@@ -1,21 +1,15 @@
-import 'package:calculator_app_bloc/src/repositories/calculator_repo.dart';
+import '../blocs/calculator_bloc/calculator_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
+class HomePage extends StatelessWidget {
+  HomePage({super.key});
   final TextEditingController _controllerFirstNum = TextEditingController();
   final TextEditingController _controllerSecondNum = TextEditingController();
-  num result = 0;
 
   @override
   Widget build(BuildContext context) {
-    final CalculatorRepo calculatorRepo = CalculatorRepo();
+    final calculatorBloc = BlocProvider.of<CalculatorBloc>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Calculator with Bloc'),
@@ -59,10 +53,8 @@ class _HomePageState extends State<HomePage> {
                               _controllerSecondNum.text.isNotEmpty) {
                             num num1 = num.parse(_controllerFirstNum.text);
                             num num2 = num.parse(_controllerSecondNum.text);
-                            setState(() {
-                              result =
-                                  calculatorRepo.add(num1: num1, num2: num2);
-                            });
+                            calculatorBloc
+                                .add(AddEvent(num1: num1, num2: num2));
                           }
                         },
                       ),
@@ -80,10 +72,8 @@ class _HomePageState extends State<HomePage> {
                               _controllerSecondNum.text.isNotEmpty) {
                             num num1 = num.parse(_controllerFirstNum.text);
                             num num2 = num.parse(_controllerSecondNum.text);
-                            setState(() {
-                              result = calculatorRepo.subtract(
-                                  num1: num1, num2: num2);
-                            });
+                            calculatorBloc
+                                .add(SubtractEvent(num1: num1, num2: num2));
                           }
                         },
                       ),
@@ -101,10 +91,8 @@ class _HomePageState extends State<HomePage> {
                               _controllerSecondNum.text.isNotEmpty) {
                             num num1 = num.parse(_controllerFirstNum.text);
                             num num2 = num.parse(_controllerSecondNum.text);
-                            setState(() {
-                              result = calculatorRepo.multiply(
-                                  num1: num1, num2: num2);
-                            });
+                            calculatorBloc
+                                .add(MultiplyEvent(num1: num1, num2: num2));
                           }
                         },
                       ),
@@ -122,10 +110,8 @@ class _HomePageState extends State<HomePage> {
                               _controllerSecondNum.text.isNotEmpty) {
                             num num1 = num.parse(_controllerFirstNum.text);
                             num num2 = num.parse(_controllerSecondNum.text);
-                            setState(() {
-                              result =
-                                  calculatorRepo.divide(num1: num1, num2: num2);
-                            });
+                            calculatorBloc
+                                .add(DivideEvent(num1: num1, num2: num2));
                           }
                         },
                       ),
@@ -133,11 +119,26 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
                 const SizedBox(height: 20.0),
-                Text(
-                  'Result: ${result.toStringAsPrecision(3)}',
-                  style: const TextStyle(
-                      fontSize: 22, fontWeight: FontWeight.bold),
-                )
+                BlocBuilder(
+                  bloc: calculatorBloc,
+                  builder: (context, state) {
+                    if (state is CalculatorResult) {
+                      return Text(
+                        'Result: ${state.result.toStringAsPrecision(3)}',
+                        style: const TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
+                      );
+                    } else {
+                      return const Text(
+                        'Something went wrong',
+                        style: TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red),
+                      );
+                    }
+                  },
+                ),
               ]),
         ),
       ),

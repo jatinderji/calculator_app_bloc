@@ -1,3 +1,6 @@
+import 'package:calculator_app_bloc/src/blocs/calculator_bloc/calculator_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
 import 'src/pages/home_page.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +20,10 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: BlocProvider(
+        create: (context) => CalculatorBloc(),
+        child: HomePage(),
+      ),
     );
   }
 }
